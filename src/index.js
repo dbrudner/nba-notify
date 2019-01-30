@@ -1,1 +1,1 @@
-console.log("HEy")
+const style = require("./style/style.scss")
