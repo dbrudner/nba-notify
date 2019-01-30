@@ -14,8 +14,6 @@ module.exports = {
             template: "./src/index.html"
         }),
         new MiniCssExtractPlugin({
-            // Options similar to the same options in webpackOptions.output
-            // both options are optional
             filename: "./src/style.css",
         })
     ],
@@ -28,6 +26,17 @@ module.exports = {
                 "css-loader",
                 "sass-loader"
             ]
-        }]
+        },
+        {
+            test: /\.m?js$/,
+            exclude: /(node_modules|bower_components)/,
+            use: {
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-env']
+                }
+            }
+        }
+        ]
     },
 }
