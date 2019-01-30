@@ -1,0 +1,1 @@
+A light front-end in vanilla-js to use my [go-nba API](https://github.com/dbrudner/go-nba).
