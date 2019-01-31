@@ -6,15 +6,11 @@ import "./style/style.scss";
 	const fetchURL =
 		"https://infinite-cove-44078.herokuapp.com/stats?name=Kevin+Durant";
 
-	fetch(fetchURL).then(res => {
-		const x = res.json();
-		console.log(x);
-	});
-
-	// const fetchPlayer = async player => {
-	//     const response = await fetch(`https://infinite-cove-44078.herokuapp.com/stats?name=${player}`)
-	//     console.log(await response.json());
-	// }
+	(async () => {
+		const response = await fetch(fetchURL);
+		const data = await response.json();
+		console.log(await data);
+	})();
 
 	playerForm.addEventListener("submit", e => {
 		e.preventDefault();
