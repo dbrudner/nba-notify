@@ -1,8 +1,40 @@
+$black: #272727;
+$light-gray: #d7d7d7;
+$off-white: #fff4d3;
+
+html {
+	color: $black;
+}
+
 .container {
 	max-width: 1000px;
 	margin: auto;
 }
 
-h1 {
-	color: red;
+.teams {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.team {
+	margin: 15px;
+	padding: 15px;
+	border: 1px solid $light-gray;
+	border-radius: 3px;
+	cursor: pointer;
+
+	img {
+		width: 100px;
+		margin: auto;
+		display: block;
+	}
+
+	h3 {
+		text-align: center;
+	}
+
+	&:hover {
+		background-color: $off-white;
+		transition: all 1s;
+	}
 }
