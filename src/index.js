@@ -1,7 +1,10 @@
 import "@babel/polyfill";
 import "./style/style.scss";
+import { initializeFirebase } from "./notify";
 
 (() => {
+	initializeFirebase();
+
 	const fetchTeams = async () => {
 		const fetchURL = "https://infinite-cove-44078.herokuapp.com/teams";
 		const res = await fetch(fetchURL);
@@ -57,4 +60,18 @@ import "./style/style.scss";
 		const x = await fetchTeams();
 		displayTeams(x);
 	})();
+
+	document.addEventListener("click", e => {
+		const el = e.target.closest(".team");
+		if (e.target.closest(".team")) {
+			console.log("Fired");
+			navigator.serviceWorker.controller.postMessage("Client 1 says");
+		}
+	});
+
+	function send_message_to_sw(msg) {
+		navigator.serviceWorker.controller.postMessage(
+			"Client 1 says '" + msg + "'",
+		);
+	}
 })();

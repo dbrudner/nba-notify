@@ -11,4 +11,6 @@ app.get("/hi", (_, res) => {
 	res.sendFile(path.resolve(__dirname + "/dist", "index.html"));
 });
 
-app.listen(port);
+app.listen(port, () => {
+	console.log(`Running on ${port}`);
+});
