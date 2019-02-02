@@ -3,6 +3,12 @@ import "./style/style.scss";
 import firebase from "firebase";
 
 (() => {
+	if ("serviceWorker" in navigator) {
+		window.addEventListener("load", function() {
+			navigator.serviceWorker.register("/sw.js");
+		});
+	}
+
 	firebase.initializeApp({
 		apiKey: "AIzaSyDf6VNL53mhdNqrV0ay5Ndru4GzwuCmizU",
 		authDomain: "nba-notify.firebaseapp.com",

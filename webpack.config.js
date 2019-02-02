@@ -1,19 +1,15 @@
 const path = require("path");
-const glob = require("glob");
 const WebpackPwaManifest = require("webpack-pwa-manifest");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 
 const manifestJSON = require("./manifest-json");
 
-const entry = glob.sync("./src/*.js").reduce((acc, file) => {
-	let name = file.split("/")[2];
-	name = name.substr(0, name.length - 3);
-	return { ...acc, [name]: file };
-}, {});
-
 module.exports = {
-	entry,
+	entry: {
+		main: "./src/main.js",
+	},
 	output: {
 		path: path.resolve(__dirname, "dist"),
 		filename: "[name].js",
@@ -24,6 +20,9 @@ module.exports = {
 			minify: true,
 			template: path.resolve(__dirname, "src", "index.html"),
 			filename: "./index.html",
+		}),
+		new ServiceWorkerWebpackPlugin({
+			entry: path.join(__dirname, "src/sw.js"),
 		}),
 		new WebpackPwaManifest(manifestJSON),
 		new MiniCssExtractPlugin({

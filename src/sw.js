@@ -1,8 +1,7 @@
-if ("serviceWorker" in navigator) {
-	window.addEventListener("load", function() {
-		navigator.serviceWorker.register("/sw.js");
-	});
-}
+console.log(self);
+
+importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js");
 
 // Import and configure the Firebase SDK
 // These scripts are made available when the app is served or deployed on Firebase Hosting
@@ -20,8 +19,7 @@ if ("serviceWorker" in navigator) {
  // Give the service worker access to Firebase Messaging.
  // Note that you can only use Firebase Messaging here, other Firebase libraries
  // are not available in the service worker.
- importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js');
- importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js');
+
  // Initialize the Firebase app in the service worker by passing in the
  // messagingSenderId.
  firebase.initializeApp({
