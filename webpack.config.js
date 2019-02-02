@@ -1,7 +1,10 @@
 const path = require("path");
 const glob = require("glob");
+const WebpackPwaManifest = require("webpack-pwa-manifest");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+const manifestJSON = require("./manifest-json");
 
 const entry = glob.sync("./src/*.js").reduce((acc, file) => {
 	let name = file.split("/")[2];
@@ -22,6 +25,7 @@ module.exports = {
 			template: path.resolve(__dirname, "src", "index.html"),
 			filename: "./index.html",
 		}),
+		new WebpackPwaManifest(manifestJSON),
 		new MiniCssExtractPlugin({
 			filename: "./src/style.css",
 		}),

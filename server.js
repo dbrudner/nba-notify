@@ -7,9 +7,9 @@ const app = express();
 app.use(express.static(__dirname + "/dist"));
 
 // send the user to index html page inspite of the url
-app.get("/hi", (_, res) => {
-	res.sendFile(path.resolve(__dirname + "/dist", "index.html"));
-});
+// app.get("/hi", (_, res) => {
+// 	res.sendFile(path.resolve(__dirname + "/dist", "index.html"));
+// });
 
 app.listen(port, () => {
 	console.log(`Running on ${port}`);
