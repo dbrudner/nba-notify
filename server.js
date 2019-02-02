@@ -7,12 +7,12 @@ const app = express();
 app.use(express.static(__dirname + "/dist"));
 
 // Send service-worker before html
-app.get("/service-worker.js", (_, res) => {
-	res.sendFile(path.resolve(__dirname, "/dist", "service-worker.js"));
+app.get("/sw.js", (_, res) => {
+	res.sendFile(path.resolve(__dirname, "/dist", "sw.bundle.js"));
 });
 
 // send the user to index html page inspite of the url
-app.get("*", (_, res) => {
+app.get("/home", (_, res) => {
 	res.sendFile(path.resolve(__dirname + "/dist", "index.html"));
 });
 
