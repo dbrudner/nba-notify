@@ -6,8 +6,10 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "webpack",
-		"start": "webpack-dev-server --content-base src --hot --inline",
-		"web-push": "web-push"
+		"dev": "webpack-dev-server --content-base src --hot --inline",
+		"web-push": "web-push",
+		"start": "node server.js",
+		"heroku-postbuild": "webpack -p"
 	},
 	"repository": {
 		"type": "git",
