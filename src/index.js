@@ -22,6 +22,9 @@ import "./style/style.scss";
 			const teamName = document.createElement("h3");
 			const logo = document.createElement("img");
 
+			// Adding team name data attribute to main <div />
+			teamDiv.setAttribute("data-team", team.fullName);
+
 			// Creating text node for team name <h3 />
 			const teamNameText = document.createTextNode(team.fullName);
 
