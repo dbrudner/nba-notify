@@ -9,7 +9,7 @@
 		"dev": "webpack-dev-server --content-base src --hot --inline && NODE_ENV=dev",
 		"web-push": "web-push",
 		"start": "node server.js",
-		"stupid": "npm run build && npm start",
+		"server:dev": "npm run build && npm start",
 		"heroku-postbuild": "webpack -p"
 	},
 	"repository": {
