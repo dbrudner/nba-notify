@@ -6,11 +6,6 @@ const app = express();
 // the __dirname is the current directory from where the script is running
 app.use(express.static(__dirname + "/dist"));
 
-// Send service-worker before html
-app.get("/sw.js", (_, res) => {
-	res.sendFile(path.resolve(__dirname, "/dist", "sw.bundle.js"));
-});
-
 // send the user to index html page inspite of the url
 app.get("/home", (_, res) => {
 	res.sendFile(path.resolve(__dirname + "/dist", "index.html"));
