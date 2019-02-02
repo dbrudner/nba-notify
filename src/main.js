@@ -60,18 +60,4 @@ import { initializeFirebase } from "./notify";
 		const x = await fetchTeams();
 		displayTeams(x);
 	})();
-
-	document.addEventListener("click", e => {
-		const el = e.target.closest(".team");
-		if (e.target.closest(".team")) {
-			console.log("Fired");
-			navigator.serviceWorker.controller.postMessage("Client 1 says");
-		}
-	});
-
-	function send_message_to_sw(msg) {
-		navigator.serviceWorker.controller.postMessage(
-			"Client 1 says '" + msg + "'",
-		);
-	}
 })();
