@@ -3,11 +3,18 @@ const glob = require("glob");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+const entry = glob.sync("./src/*.js").reduce((acc, file) => {
+	let name = file.split("/")[2];
+	name = name.substr(0, name.length - 3);
+	return { ...acc, [name]: file };
+}, {});
+
 module.exports = {
-	entry: glob.sync("./src/*.js"),
+	entry,
 	output: {
 		path: path.resolve(__dirname, "dist"),
-		filename: "[name].bundle.js",
+		filename: "[name].js",
+		publicPath: "./",
 	},
 	plugins: [
 		new HtmlWebpackPlugin({

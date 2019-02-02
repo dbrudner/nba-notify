@@ -1,9 +1,51 @@
 import "@babel/polyfill";
 import "./style/style.scss";
-import { initializeFirebase } from "./notify";
+import firebase from "firebase";
 
 (() => {
-	initializeFirebase();
+	firebase.initializeApp({
+		apiKey: "AIzaSyDf6VNL53mhdNqrV0ay5Ndru4GzwuCmizU",
+		authDomain: "nba-notify.firebaseapp.com",
+		databaseURL: "https://nba-notify.firebaseio.com",
+		projectId: "nba-notify",
+		storageBucket: "nba-notify.appspot.com",
+		messagingSenderId: "852852054770",
+	});
+
+	const messaging = firebase.messaging();
+	messaging.usePublicVapidKey(
+		"BBHsRUDv4YcY1VCtNiH8quGDY5tLtxT8XJYR4jA-TqCx9pShsDLlkz0-6kz8XxkKVoubVyo5UNmlKoEhpBSuRMw",
+	);
+
+	messaging.onTokenRefresh(function() {
+		messaging
+			.getToken()
+			.then(function(refreshedToken) {
+				console.log("Token refreshed.");
+				// Indicate that the new Instance ID token has not yet been sent to the
+				// app server.
+				setTokenSentToServer(false);
+				// Send Instance ID token to app server.
+				sendTokenToServer(refreshedToken);
+				// [START_EXCLUDE]
+				// Display new Instance ID token and clear UI of all previous messages.
+				resetUI();
+				// [END_EXCLUDE]
+			})
+			.catch(function(err) {
+				console.log("Unable to retrieve refreshed token ", err);
+				showToken("Unable to retrieve refreshed token ", err);
+			});
+	});
+
+	// messaging
+	// 	.requestPermission()
+	// 	.then(res => {
+	// 		console.log(res);
+	// 	})
+	// 	.catch(err => {
+	// 		throw new Error(err);
+	// 	});
 
 	const fetchTeams = async () => {
 		const fetchURL = "https://infinite-cove-44078.herokuapp.com/teams";
