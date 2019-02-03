@@ -1,14 +1,16 @@
 import "@babel/polyfill";
 import "./style/style.scss";
-import firebase from "firebase";
+import * as firebase from "firebase";
 
 (() => {
+	// Register service worker
 	if ("serviceWorker" in navigator) {
 		window.addEventListener("load", function() {
 			navigator.serviceWorker.register("/sw.js");
 		});
 	}
 
+	// Initialize firebase
 	firebase.initializeApp({
 		apiKey: "AIzaSyDf6VNL53mhdNqrV0ay5Ndru4GzwuCmizU",
 		authDomain: "nba-notify.firebaseapp.com",
@@ -18,41 +20,12 @@ import firebase from "firebase";
 		messagingSenderId: "852852054770",
 	});
 
-	const messaging = firebase.messaging();
-	messaging.usePublicVapidKey(
-		"BBHsRUDv4YcY1VCtNiH8quGDY5tLtxT8XJYR4jA-TqCx9pShsDLlkz0-6kz8XxkKVoubVyo5UNmlKoEhpBSuRMw",
-	);
+	// const messaging = firebase.messaging();
+	// messaging.usePublicVapidKey(
+	// 	"BBHsRUDv4YcY1VCtNiH8quGDY5tLtxT8XJYR4jA-TqCx9pShsDLlkz0-6kz8XxkKVoubVyo5UNmlKoEhpBSuRMw",
+	// );
 
-	messaging.onTokenRefresh(function() {
-		messaging
-			.getToken()
-			.then(function(refreshedToken) {
-				console.log("Token refreshed.");
-				// Indicate that the new Instance ID token has not yet been sent to the
-				// app server.
-				setTokenSentToServer(false);
-				// Send Instance ID token to app server.
-				sendTokenToServer(refreshedToken);
-				// [START_EXCLUDE]
-				// Display new Instance ID token and clear UI of all previous messages.
-				resetUI();
-				// [END_EXCLUDE]
-			})
-			.catch(function(err) {
-				console.log("Unable to retrieve refreshed token ", err);
-				showToken("Unable to retrieve refreshed token ", err);
-			});
-	});
-
-	// messaging
-	// 	.requestPermission()
-	// 	.then(res => {
-	// 		console.log(res);
-	// 	})
-	// 	.catch(err => {
-	// 		throw new Error(err);
-	// 	});
-
+	// Fetches array of NBA teams info
 	const fetchTeams = async () => {
 		const fetchURL = "https://infinite-cove-44078.herokuapp.com/teams";
 		const res = await fetch(fetchURL);
@@ -104,8 +77,30 @@ import firebase from "firebase";
 		});
 	};
 
+	// Fetches and displays teams
 	(async () => {
 		const x = await fetchTeams();
 		displayTeams(x);
+	})();
+
+	// Adds event listener to enable notifications on enable notifications button
+	(() => {
+		const enableNotificationsButton = document.querySelector(
+			".js-enable-notifications",
+		);
+
+		enableNotificationsButton.addEventListener("click", async () => {
+			firebase
+				.messaging()
+				.requestPermission()
+				.then(function() {
+					console.log("Notification permission granted.");
+					// TODO(developer): Retrieve an Instance ID token for use with FCM.
+					// ...
+				})
+				.catch(function(err) {
+					console.log("Unable to get permission to notify.", err);
+				});
+		});
 	})();
 })();
