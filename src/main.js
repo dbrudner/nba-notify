@@ -28,12 +28,11 @@ import * as firebase from "firebase";
 	};
 
 	const checkNotificationPermission = () => {
+		debugger;
 		if (Notification.permission === "granted") {
-			document
-				.querySelectorAll(
-					".js-enable-notifications, .js-notifications-alert",
-				)
-				.classList.add("hidden");
+			const el = document.querySelector(".js-notifications-alert");
+
+			el.classList.add("hidden");
 		}
 	};
 
@@ -46,15 +45,21 @@ import * as firebase from "firebase";
 			// 	teamDiv: Main div (<div />)
 			// 	teamName: Team name (<h3 />)
 			// 	logo: Team logo (<img />)
+			// 	subscribeButton: button when clicked subscribes to team (<button />)
 			const teamDiv = document.createElement("div");
 			const teamName = document.createElement("h3");
 			const logo = document.createElement("img");
-
-			// Adding team name data attribute to main <div />
-			teamDiv.setAttribute("data-team", team.fullName);
+			const subscribeButton = document.createElement("button");
 
 			// Creating text node for team name <h3 />
 			const teamNameText = document.createTextNode(team.fullName);
+
+			// Creating subscribe text
+			const subscribeText = document.createTextNode("Subscribe");
+
+			// Adding data attributes to main <div />
+			teamDiv.setAttribute("data-team", team.fullName);
+			teamDiv.setAttribute("data-tricode", team.tricode);
 
 			// Adding .team class to main <div />
 			teamDiv.classList.add("team");
@@ -70,11 +75,21 @@ import * as firebase from "firebase";
 			// Setting alt on <img />
 			logo.alt = team.fullName;
 
+			// Adding text and class to <button />
+			subscribeButton.appendChild(subscribeText);
+			subscribeButton.classList.add(
+				"btn",
+				"center-block",
+				"js-subscribe-team",
+			);
+
+			// Adding teamname text to teamName <div />
 			teamName.appendChild(teamNameText);
 
 			// Appending nodes
 			teamDiv.appendChild(logo);
 			teamDiv.appendChild(teamName);
+			teamDiv.appendChild(subscribeButton);
 
 			// Adding el to target container
 			target.appendChild(teamDiv);
