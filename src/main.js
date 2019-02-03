@@ -28,6 +28,16 @@ import * as firebase from "firebase";
 		return data.Teams;
 	};
 
+	const checkNotificationPermission = () => {
+		if (Notification.permission === "granted") {
+			document
+				.querySelectorAll(
+					".js-enable-notifications, .js-notifications-alert",
+				)
+				.classList.add("hidden");
+		}
+	};
+
 	const displayTeams = teams => {
 		teams.forEach(team => {
 			// Getting target container
@@ -78,26 +88,24 @@ import * as firebase from "firebase";
 		displayTeams(x);
 	})();
 
-	const messaging = firebase.messaging();
-
 	// Adds event listener to enable notifications on enable notifications button
-	(() => {
-		const enableNotificationsButton = document.querySelector(
-			".js-enable-notifications",
-		);
+	const enableNotificationsButton = document.querySelector(
+		".js-enable-notifications",
+	);
 
-		enableNotificationsButton.addEventListener("click", async () => {
-			try {
-				const messaging = firebase.messaging();
+	enableNotificationsButton.addEventListener("click", async () => {
+		try {
+			const messaging = firebase.messaging();
 
-				await messaging.requestPermission();
-				const token = await messaging.getToken();
-				console.log("user token: ", token);
+			await messaging.requestPermission();
+			const token = await messaging.getToken();
+			console.log("user token: ", token);
 
-				return token;
-			} catch (error) {
-				console.error(error);
-			}
-		});
-	})();
+			return token;
+		} catch (error) {
+			console.error(error);
+		}
+	});
+
+	checkNotificationPermission();
 })();
