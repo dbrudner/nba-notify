@@ -27,15 +27,22 @@ import * as firebase from "firebase";
 		return data.Teams;
 	};
 
+	// Checks notification permission and hides either
+	// 	alert if permission is granted
+	// 	teams if permission is not granted
 	const checkNotificationPermission = () => {
-		debugger;
-		if (Notification.permission === "granted") {
-			const el = document.querySelector(".js-notifications-alert");
+		let hiddenEl;
 
-			el.classList.add("hidden");
+		if (Notification.permission === "granted") {
+			hiddenEl = document.querySelector(".js-notifications-alert");
+		} else {
+			hiddenEl = document.querySelector(".main");
 		}
+
+		hiddenEl.classList.add("hidden");
 	};
 
+	// Iterates through `teams`, creates elements, and appends them
 	const displayTeams = teams => {
 		teams.forEach(team => {
 			// Getting target container
@@ -98,8 +105,8 @@ import * as firebase from "firebase";
 
 	// Fetches and displays teams
 	(async () => {
-		const x = await fetchTeams();
-		displayTeams(x);
+		const teams = await fetchTeams();
+		displayTeams(teams);
 	})();
 
 	// Adds event listener to enable notifications on enable notifications button
@@ -113,6 +120,7 @@ import * as firebase from "firebase";
 
 			await messaging.requestPermission();
 			const token = await messaging.getToken();
+
 			console.log("user token: ", token);
 
 			return token;
