@@ -12,7 +12,6 @@ import * as firebase from "firebase";
 
 	// Initialize firebase
 	firebase.initializeApp({
-		apiKey: "AIzaSyDf6VNL53mhdNqrV0ay5Ndru4GzwuCmizU",
 		authDomain: "nba-notify.firebaseapp.com",
 		databaseURL: "https://nba-notify.firebaseio.com",
 		projectId: "nba-notify",
