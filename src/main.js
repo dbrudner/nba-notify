@@ -3,13 +3,6 @@ import "./style/style.scss";
 import * as firebase from "firebase";
 
 (() => {
-	// Register service worker
-	if ("serviceWorker" in navigator) {
-		window.addEventListener("load", function() {
-			navigator.serviceWorker.register("/firebase-messaging-sw.js");
-		});
-	}
-
 	// Initialize firebase
 	firebase.initializeApp({
 		authDomain: "nba-notify.firebaseapp.com",
@@ -18,6 +11,13 @@ import * as firebase from "firebase";
 		storageBucket: "nba-notify.appspot.com",
 		messagingSenderId: "852852054770",
 	});
+
+	// Register service worker
+	if ("serviceWorker" in navigator) {
+		window.addEventListener("load", function() {
+			navigator.serviceWorker.register("/firebase-messaging-sw.js");
+		});
+	}
 
 	// Fetches array of NBA teams info
 	const fetchTeams = async () => {
@@ -103,13 +103,7 @@ import * as firebase from "firebase";
 		});
 	};
 
-	// Fetches and displays teams
-	(async () => {
-		const teams = await fetchTeams();
-		displayTeams(teams);
-	})();
-
-	// Adds event listener to enable notifications on enable notifications button
+	// function to add event listener to enable notifications on enable notifications button
 	const enableNotificationsButton = document.querySelector(
 		".js-enable-notifications",
 	);
@@ -130,4 +124,10 @@ import * as firebase from "firebase";
 	});
 
 	checkNotificationPermission();
+
+	// Fetches and displays teams
+	(async () => {
+		const teams = await fetchTeams();
+		displayTeams(teams);
+	})();
 })();
