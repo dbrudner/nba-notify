@@ -1,1 +1,1 @@
-A light front-end in vanilla-js to use my [go-nba API](https://github.com/dbrudner/go-nba).
+Web app that lets users subscribe to NBA teams to receive push notifications and links to live streams during gametimes. [go-nba API](https://github.com/dbrudner/go-nba).
