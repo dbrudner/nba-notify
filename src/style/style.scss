@@ -6,9 +6,12 @@ $off-white: #fff4d3;
 $red: #ff000091;
 $white: #fff;
 
+$font-main: "Sarabun", sans-serif;
+$font-header: "Montserrat", sans-serif;
+
 html {
 	color: $black;
-	font-family: "Sarabun", sans-serif;
+	font-family: $font-main;
 }
 
 .alert {
@@ -33,7 +36,7 @@ html {
 	border-radius: 3px;
 	color: $white;
 	cursor: pointer;
-	font-family: "Montserrat", sans-serif;
+	font-family: $font-header;
 	font-size: 16px;
 	padding: 10px 15px;
 
@@ -87,7 +90,7 @@ html {
 	}
 
 	h3 {
-		font-family: "Montserrat", sans-serif;
+		font-family: $font-header;
 		text-align: center;
 	}
 }
