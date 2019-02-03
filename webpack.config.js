@@ -22,7 +22,8 @@ module.exports = {
 			filename: "./index.html",
 		}),
 		new ServiceWorkerWebpackPlugin({
-			entry: path.join(__dirname, "src/sw.js"),
+			entry: path.join(__dirname, "src/firebase-messaging-sw.js"),
+			filename: "firebase-messaging-sw.js",
 		}),
 		new WebpackPwaManifest(manifestJSON),
 		new MiniCssExtractPlugin({

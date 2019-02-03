@@ -6,7 +6,7 @@ import * as firebase from "firebase";
 	// Register service worker
 	if ("serviceWorker" in navigator) {
 		window.addEventListener("load", function() {
-			navigator.serviceWorker.register("/sw.js");
+			navigator.serviceWorker.register("/firebase-messaging-sw.js");
 		});
 	}
 
@@ -83,6 +83,8 @@ import * as firebase from "firebase";
 		displayTeams(x);
 	})();
 
+	const messaging = firebase.messaging();
+
 	// Adds event listener to enable notifications on enable notifications button
 	(() => {
 		const enableNotificationsButton = document.querySelector(
@@ -90,17 +92,18 @@ import * as firebase from "firebase";
 		);
 
 		enableNotificationsButton.addEventListener("click", async () => {
-			firebase
-				.messaging()
-				.requestPermission()
-				.then(function() {
-					console.log("Notification permission granted.");
-					// TODO(developer): Retrieve an Instance ID token for use with FCM.
-					// ...
-				})
-				.catch(function(err) {
-					console.log("Unable to get permission to notify.", err);
-				});
+			try {
+				const messaging = firebase.messaging();
+
+				await messaging.requestPermission();
+				console.log("Done");
+				const token = await messaging.getToken();
+				console.log("user token: ", token);
+
+				return token;
+			} catch (error) {
+				console.error(error);
+			}
 		});
 	})();
 })();
