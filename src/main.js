@@ -20,11 +20,6 @@ import * as firebase from "firebase";
 		messagingSenderId: "852852054770",
 	});
 
-	// const messaging = firebase.messaging();
-	// messaging.usePublicVapidKey(
-	// 	"BBHsRUDv4YcY1VCtNiH8quGDY5tLtxT8XJYR4jA-TqCx9pShsDLlkz0-6kz8XxkKVoubVyo5UNmlKoEhpBSuRMw",
-	// );
-
 	// Fetches array of NBA teams info
 	const fetchTeams = async () => {
 		const fetchURL = "https://infinite-cove-44078.herokuapp.com/teams";
@@ -96,7 +91,6 @@ import * as firebase from "firebase";
 				const messaging = firebase.messaging();
 
 				await messaging.requestPermission();
-				console.log("Done");
 				const token = await messaging.getToken();
 				console.log("user token: ", token);
 
