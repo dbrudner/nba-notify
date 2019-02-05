@@ -50,6 +50,15 @@ html {
 	&:hover {
 		background-color: $light-green;
 	}
+
+	&:disabled {
+		background-color: $light-gray;
+		cursor: not-allowed;
+	}
+}
+
+.btn.btn-warning {
+	background-color: $red;
 }
 
 .btn-lg {
@@ -89,7 +98,7 @@ html {
 	button {
 		position: absolute;
 		bottom: 0;
-		width: 110px;
+		width: 135px;
 		bottom: 20px;
 		left: 0;
 		right: 0;

@@ -1,6 +1,7 @@
 import "@babel/polyfill";
 import "./style/style.scss";
 import * as firebase from "firebase";
+import axios from "axios";
 
 (() => {
 	// Initialize firebase
@@ -65,8 +66,8 @@ import * as firebase from "firebase";
 			const subscribeText = document.createTextNode("Subscribe");
 
 			// Adding data attributes to main <div />
-			teamDiv.setAttribute("data-team", team.fullName);
-			teamDiv.setAttribute("data-tricode", team.tricode);
+			subscribeButton.setAttribute("data-team", team.fullName);
+			subscribeButton.setAttribute("data-tricode", team.tricode);
 
 			// Adding .team class to main <div />
 			teamDiv.classList.add("team");
@@ -115,11 +116,41 @@ import * as firebase from "firebase";
 			await messaging.requestPermission();
 			const token = await messaging.getToken();
 
-			console.log("user token: ", token);
-
 			return token;
 		} catch (error) {
 			console.error(error);
+		}
+	});
+
+	const subscribeToTeam = async el => {
+		try {
+			el.setAttribute("disabled", true);
+
+			const tricode = el.getAttribute("data-tricode");
+			const messaging = firebase.messaging();
+
+			const userToken = await messaging.getToken();
+
+			const url = "https://nba-notify-api.herokuapp.com/subscribe";
+
+			const body = {
+				tricode,
+				userToken,
+			};
+
+			await axios.post(url, body);
+
+			await el.removeAttribute("disabled");
+			el.classList.add("btn-warning");
+			el.firstChild.nodeValue = "Unsubscribe";
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	document.addEventListener("click", e => {
+		if (e.target.classList.contains("js-subscribe-team")) {
+			subscribeToTeam(e.target);
 		}
 	});
 
