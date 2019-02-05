@@ -10,7 +10,7 @@ import axios from "axios";
 		databaseURL: "https://nba-notify.firebaseio.com",
 		projectId: "nba-notify",
 		storageBucket: "nba-notify.appspot.com",
-		messagingSenderId: "852852054770",
+		messagingSenderId: "852852054770"
 	});
 
 	// Register service worker
@@ -85,11 +85,7 @@ import axios from "axios";
 
 			// Adding text and class to <button />
 			subscribeButton.appendChild(subscribeText);
-			subscribeButton.classList.add(
-				"btn",
-				"center-block",
-				"js-subscribe-team",
-			);
+			subscribeButton.classList.add("btn", "center-block", "js-subscribe-team");
 
 			// Adding teamname text to teamName <div />
 			teamName.appendChild(teamNameText);
@@ -106,7 +102,7 @@ import axios from "axios";
 
 	// function to add event listener to enable notifications on enable notifications button
 	const enableNotificationsButton = document.querySelector(
-		".js-enable-notifications",
+		".js-enable-notifications"
 	);
 
 	enableNotificationsButton.addEventListener("click", async () => {
@@ -125,6 +121,9 @@ import axios from "axios";
 	const subscribeToTeam = async el => {
 		try {
 			el.setAttribute("disabled", true);
+			el.firstChild.nodeValue = "Loading...";
+			// el.innerHTML =
+			// 	'<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px"></i>';
 
 			const tricode = el.getAttribute("data-tricode");
 			const messaging = firebase.messaging();
@@ -135,7 +134,7 @@ import axios from "axios";
 
 			const body = {
 				tricode,
-				userToken,
+				userToken
 			};
 
 			await axios.post(url, body);
