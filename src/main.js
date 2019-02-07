@@ -59,9 +59,9 @@ import axios from "axios";
 	// Iterates through `teams`, creates elements, and appends them
 	const displayTeams = (teams, subscription) => {
 		teams.forEach(team => {
-			const alreadySubscribed = subscription.subscriptions.includes(
-				team.tricode,
-			);
+			const alreadySubscribed = subscription
+				? subscription.subscriptions.includes(team.tricode)
+				: false;
 
 			// Getting target container
 			const target = document.querySelector(".teams");
