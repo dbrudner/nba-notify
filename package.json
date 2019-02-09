@@ -47,6 +47,7 @@
 		"axios": "^0.18.0",
 		"cookie-parser": "^1.4.3",
 		"express": "^4.16.4",
-		"firebase": "^5.8.2"
+		"firebase": "^5.8.2",
+		"jsonwebtoken": "^8.4.0"
 	}
 }
