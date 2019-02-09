@@ -6,7 +6,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "webpack",
-		"dev": "webpack-dev-server --content-base src --hot --inline && NODE_ENV=dev",
+		"dev": "webpack-dev-server --content-base src --hot --inline",
 		"web-push": "web-push",
 		"start": "node server.js",
 		"dev:server": "npm run build && npm start",
@@ -45,6 +45,7 @@
 	},
 	"dependencies": {
 		"axios": "^0.18.0",
+		"cookie-parser": "^1.4.3",
 		"express": "^4.16.4",
 		"firebase": "^5.8.2"
 	}
