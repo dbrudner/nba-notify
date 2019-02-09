@@ -1,5 +1,5 @@
 import "@babel/polyfill";
-import "./style/style.scss";
+import "../style/style.scss";
 import * as firebase from "firebase";
 import axios from "axios";
 

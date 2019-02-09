@@ -1,4 +1,5 @@
 const path = require("path");
+const glob = require("glob");
 const WebpackPwaManifest = require("webpack-pwa-manifest");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -6,29 +7,42 @@ const ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 
 const manifestJSON = require("./manifest-json");
 
+const html = glob.sync("src/views/*.html").map(file => {
+	const filename = file.split("/")[2];
+	return new HtmlWebpackPlugin({
+		template: path.resolve(__dirname, "src/views", filename),
+		filename: `./${filename}`,
+		chunks: [filename.substring(0, filename.length - 5)],
+	});
+});
+
+const plugins = [
+	...html,
+	new ServiceWorkerWebpackPlugin({
+		entry: path.join(__dirname, "src/firebase-messaging-sw.js"),
+		filename: "firebase-messaging-sw.js",
+	}),
+	new WebpackPwaManifest(manifestJSON),
+	new MiniCssExtractPlugin({
+		filename: "./src/style.css",
+	}),
+];
+
+const entry = glob.sync("src/js/*.js").reduce((obj, file) => {
+	const filename = file.split("/")[2];
+	return {
+		...obj,
+		[filename.substring(0, filename.length - 3)]: `./src/js/${filename}`,
+	};
+}, {});
+
 module.exports = {
-	entry: {
-		main: "./src/main.js",
-	},
+	entry,
 	output: {
 		path: path.resolve(__dirname, "dist"),
 		filename: "[name].js",
 	},
-	plugins: [
-		new HtmlWebpackPlugin({
-			minify: true,
-			template: path.resolve(__dirname, "src", "index.html"),
-			filename: "./index.html",
-		}),
-		new ServiceWorkerWebpackPlugin({
-			entry: path.join(__dirname, "src/firebase-messaging-sw.js"),
-			filename: "firebase-messaging-sw.js",
-		}),
-		new WebpackPwaManifest(manifestJSON),
-		new MiniCssExtractPlugin({
-			filename: "./src/style.css",
-		}),
-	],
+	plugins,
 	devtool: "source-map",
 	module: {
 		rules: [
