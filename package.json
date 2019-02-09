@@ -6,7 +6,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "webpack",
-		"dev": "webpack-dev-server --content-base src --hot --inline",
+		"dev": "webpack-dev-server --content-base ./dist --hot --inline",
 		"web-push": "web-push",
 		"start": "node server.js",
 		"dev:server": "npm run build && npm start",

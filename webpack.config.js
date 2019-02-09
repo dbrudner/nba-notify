@@ -24,7 +24,7 @@ const plugins = [
 	}),
 	new WebpackPwaManifest(manifestJSON),
 	new MiniCssExtractPlugin({
-		filename: "./src/style.css",
+		filename: "./src/style/[name].css",
 	}),
 ];
 

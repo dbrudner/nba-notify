@@ -1,0 +1,36 @@
+$black: #272727;
+$blue: #6b6bfc;
+$green: #219925;
+$light-gray: #d7d7d7;
+$light-green: #41bd45;
+$off-white: #fff4d3;
+$red: #ff000091;
+$white: #fff;
+
+$font-main: "Sarabun", sans-serif;
+$font-header: "Montserrat", sans-serif;
+
+.container {
+	margin: auto;
+	max-width: 1000px;
+}
+
+.btn {
+	background-color: $green;
+	border: none;
+	border-radius: 3px;
+	color: $white;
+	cursor: pointer;
+	font-family: $font-header;
+	font-size: 16px;
+	padding: 10px 15px;
+
+	&:hover {
+		background-color: $light-green;
+	}
+
+	&:disabled {
+		background-color: $light-gray;
+		cursor: not-allowed;
+	}
+}
