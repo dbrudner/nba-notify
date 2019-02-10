@@ -37,7 +37,6 @@ import axios from "axios";
 		const fetchURL = `https://nba-notify-api.herokuapp.com/user?userToken=${userToken}`;
 		const res = await fetch(fetchURL);
 		const data = await res.json();
-		console.log(data);
 		return data;
 	};
 
@@ -164,9 +163,7 @@ import axios from "axios";
 			await el.removeAttribute("disabled");
 			el.classList.add("btn-warning");
 			el.firstChild.nodeValue = "Unsubscribe";
-		} catch (error) {
-			console.error(error);
-		}
+		} catch (error) {}
 	};
 
 	const unsubscribeToTeam = async el => {

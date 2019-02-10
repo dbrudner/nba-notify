@@ -45,14 +45,13 @@ app.get("/api/verify", async (req, res) => {
 			res.json({ verified: true });
 			res.redirect("/");
 		}
-		res.status(401).json(data);
 	} catch (err) {
+		console.log(err.response.data);
 		res.status(err.response.status).json(err.response.data);
 	}
 });
 
 app.get("/", (req, res) => {
-	console.log(req.verified);
 	if (req.verified) {
 		res.sendFile(path.resolve(__dirname + "/dist", "home.html"));
 	} else {

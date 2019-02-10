@@ -29,9 +29,9 @@
 
 	<body>
 		<div class="container">
-			<div class="verify-container">
+			<form id="beta-key-form">
 				<h1>Do you have a beta key?</h1>
-				<div class="alert hidden" role="alert">
+				<div class="alert hidden js-error" role="alert">
 					<h2>
 						<i
 							class="fas fa-exclamation-circle"
@@ -39,32 +39,29 @@
 						></i>
 						Error
 					</h2>
-					<p class="js-error-description"></p>
 				</div>
-				<form id="beta-key-form">
-					<div>
-						<label for="beta-key-name">Name</label>
-						<input
-							id="beta-key-name"
-							placeholder="Enter beta key name"
-							type="text"
-						/>
-					</div>
-					<div class="util-margin-vert-15">
-						<label for="beta-key-key">Key</label>
-						<input
-							id="beta-key-key"
-							placeholder="Enter beta key"
-							type="text"
-						/>
-					</div>
-					<div>
-						<button class="btn" type="submit">
-							Verify
-						</button>
-					</div>
-				</form>
-			</div>
+				<div>
+					<label for="beta-key-name">Name</label>
+					<input
+						id="beta-key-name"
+						placeholder="Enter beta key name"
+						type="text"
+					/>
+				</div>
+				<div class="util-margin-vert-15">
+					<label for="beta-key-key">Key</label>
+					<input
+						id="beta-key-key"
+						placeholder="Enter beta key"
+						type="text"
+					/>
+				</div>
+				<div>
+					<button class="btn" type="submit">
+						Verify
+					</button>
+				</div>
+			</form>
 		</div>
 	</body>
 </html>

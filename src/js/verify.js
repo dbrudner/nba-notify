@@ -4,12 +4,26 @@ import axios from "axios";
 
 (() => {
 	const verifyKey = async (name, key) => {
-		console.log(name, key);
 		try {
 			const res = await axios.get(`/api/verify?name=${name}&key=${key}`);
 			const data = await res.data;
 		} catch (err) {
-			console.log(err);
+			document.querySelector(".alert").classList.remove("hidden");
+			try {
+				const errorMessage = document.createElement("p");
+				const errorText = document.createTextNode(
+					err.response.data.message,
+				);
+
+				errorMessage.appendChild(errorText);
+				document.querySelector(".js-error").appendChild(errorMessage);
+			} catch (err) {
+				const errorMessage = document.createElement("p");
+				const errorText = document.createTextNode("Server error");
+
+				errorMessage.appendChild(errorText);
+				document.querySelector(".js-error").appendChild(errorMessage);
+			}
 		}
 	};
 
@@ -17,7 +31,6 @@ import axios from "axios";
 		e.preventDefault();
 		const name = document.querySelector("#beta-key-name").value;
 		const key = document.querySelector("#beta-key-key").value;
-		console.log({ name, key });
 		verifyKey(name, key);
 	});
 })();
