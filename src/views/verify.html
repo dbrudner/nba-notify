@@ -4,7 +4,17 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<title>NBA Livestream Alert</title>
+		<title>NBA Livestream Alert: Verify Key</title>
+		<link
+			href="https://fonts.googleapis.com/css?family=Montserrat|Sarabun"
+			rel="stylesheet"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+			integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+			crossorigin="anonymous"
+		/>
 		<link
 			href="https://fonts.googleapis.com/css?family=Montserrat|Sarabun"
 			rel="stylesheet"
@@ -19,14 +29,42 @@
 
 	<body>
 		<div class="container">
-			<h1>Do you have an API key?</h1>
-			<form id="api-key-form">
-				<label for="api-key-name">Name</label>
-				<input id="api-key-name" type="text" />
-				<label for="api-key-key">Key</label>
-				<input id="api-key-key" type="text" />
-				<button class="btn" type="submit">Submit</button>
-			</form>
+			<div class="verify-container">
+				<h1>Do you have a beta key?</h1>
+				<div class="alert hidden" role="alert">
+					<h2>
+						<i
+							class="fas fa-exclamation-circle"
+							aria-hidden="true"
+						></i>
+						Error
+					</h2>
+					<p class="js-error-description"></p>
+				</div>
+				<form id="beta-key-form">
+					<div>
+						<label for="beta-key-name">Name</label>
+						<input
+							id="beta-key-name"
+							placeholder="Enter beta key name"
+							type="text"
+						/>
+					</div>
+					<div class="util-margin-vert-15">
+						<label for="beta-key-key">Key</label>
+						<input
+							id="beta-key-key"
+							placeholder="Enter beta key"
+							type="text"
+						/>
+					</div>
+					<div>
+						<button class="btn" type="submit">
+							Verify
+						</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	</body>
 </html>

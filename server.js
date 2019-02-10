@@ -10,58 +10,65 @@ const axios = require("axios");
 const port = process.env.PORT || 8080;
 const app = express();
 
-console.log(process.env.APP_SECRET);
-
 app.use(cookieParser());
 
 app.use((req, res, next) => {
 	const { token } = req.cookies;
 
 	if (token) {
-		const { _id } = jwt.verify(token, process.env.APP_SECRET);
-		req._id = _id;
+		const { verified } = jwt.verify(token, process.env.APP_SECRET);
+		req.verified = verified;
 	}
 
 	next();
 });
 
-app.get("/verify", async (req, res) => {
-	const { token } = req.cookies;
-
-	if (token) {
-		res.status(304).json({
+app.get("/api/verify", async (req, res) => {
+	if (req.verified) {
+		return res.status(304).json({
 			verified: true,
-			message: "You are already authorized"
+			message: "You are already authorized",
 		});
 	}
 
 	const { name, key } = req.query;
 
-	const apiResponse = await axios.get(
-		`http://nba-notify-api.herokuapp.com/verify?key=${key}&name=${name}`
-	);
-	const data = await apiResponse.data;
+	try {
+		const apiResponse = await axios.get(
+			`http://nba-notify-api.herokuapp.com/verify?key=${key}&name=${name}`,
+		);
 
-	if (data.verified) {
-		console.log("pass");
-		const token = jwt.sign({ verified: true }, process.env.APP_SECRET);
-		res.cookie("token", token, { httpOnly: true });
-		return res.json({ verified: true });
+		const data = await apiResponse.data;
+		if (data.valid) {
+			const token = jwt.sign({ verified: true }, process.env.APP_SECRET);
+			res.cookie("token", token, { httpOnly: true });
+			res.json({ verified: true });
+			res.redirect("/");
+		}
+		res.status(401).json(data);
+	} catch (err) {
+		res.status(err.response.status).json(err.response.data);
 	}
-	console.log("Unauth");
-	res.status(401).json(data);
 });
 
 app.get("/", (req, res) => {
-	const { token } = req.cookies;
-	if (token) {
-		res.sendFile(path.resolve(__dirname + "/dist", "index.html"));
+	console.log(req.verified);
+	if (req.verified) {
+		res.sendFile(path.resolve(__dirname + "/dist", "home.html"));
 	} else {
-		res.sendFile(path.resolve(__dirname + "/dist", "verify.html"));
+		res.redirect("/verify");
 	}
 });
 
-// Serves assetts
+app.get("/verify", (req, res) => {
+	if (!req.verified) {
+		res.sendFile(path.resolve(__dirname + "/dist", "verify.html"));
+	} else {
+		res.redirect("/");
+	}
+});
+
+// Serves assets
 app.use(express.static(__dirname + "/dist"));
 
 app.listen(port, () => {

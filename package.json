@@ -9,7 +9,7 @@
 		"dev": "webpack-dev-server --content-base ./dist --hot --inline",
 		"web-push": "web-push",
 		"start": "node server.js",
-		"dev:server": "npm run build && npm start",
+		"dev:server": "npm run build && nodemon server.js",
 		"heroku-postbuild": "webpack -p"
 	},
 	"repository": {
@@ -35,6 +35,7 @@
 		"html-webpack-plugin": "^3.2.0",
 		"mini-css-extract-plugin": "^0.5.0",
 		"node-sass": "^4.11.0",
+		"nodemon": "^1.18.10",
 		"sass-loader": "^7.1.0",
 		"serviceworker-webpack-plugin": "^1.0.1",
 		"style-loader": "^0.23.1",
