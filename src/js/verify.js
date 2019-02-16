@@ -6,24 +6,22 @@ import axios from "axios";
 	const verifyKey = async (name, key) => {
 		try {
 			const res = await axios.get(`/api/verify?name=${name}&key=${key}`);
-			const data = await res.data;
-		} catch (err) {
-			document.querySelector(".alert").classList.remove("hidden");
-			try {
+			if (res.data.verified) {
+				window.location.href = "/";
+			} else {
 				const errorMessage = document.createElement("p");
-				const errorText = document.createTextNode(
-					err.response.data.message,
-				);
-
+				const errorText = document.createTextNode(res.data.message);
 				errorMessage.appendChild(errorText);
 				document.querySelector(".js-error").appendChild(errorMessage);
-			} catch (err) {
-				const errorMessage = document.createElement("p");
-				const errorText = document.createTextNode("Server error");
-
-				errorMessage.appendChild(errorText);
-				document.querySelector(".js-error").appendChild(errorMessage);
+				document.querySelector(".alert").classList.remove("hidden");
 			}
+		} catch (err) {
+			console.log(err);
+			const errorMessage = document.createElement("p");
+			const errorText = document.createTextNode("Server error");
+			errorMessage.appendChild(errorText);
+			document.querySelector(".js-error").appendChild(errorMessage);
+			document.querySelector(".alert").classList.remove("hidden");
 		}
 	};
 

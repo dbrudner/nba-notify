@@ -31,22 +31,24 @@ app.get("/api/verify", async (req, res) => {
 		});
 	}
 
-	const { name, key } = req.query;
-
 	try {
+		const { name, key } = req.query;
 		const apiResponse = await axios.get(
 			`http://nba-notify-api.herokuapp.com/verify?key=${key}&name=${name}`,
 		);
-
 		const data = await apiResponse.data;
+
 		if (data.valid) {
 			const token = jwt.sign({ verified: true }, process.env.APP_SECRET);
 			res.cookie("token", token, { httpOnly: true });
 			res.json({ verified: true });
-			res.redirect("/");
+		} else {
+			res.status(401).json({
+				verified: false,
+				message: "Wrong key name or key.",
+			});
 		}
 	} catch (err) {
-		console.log(err.response.data);
 		res.status(err.response.status).json(err.response.data);
 	}
 });
