@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 
 app.get("/api/verify", async (req, res) => {
 	if (req.verified) {
-		return res.status(200).json({
+		return res.json({
 			verified: true,
 			message: "You are already authorized",
 		});
@@ -49,7 +49,8 @@ app.get("/api/verify", async (req, res) => {
 			});
 		}
 	} catch (err) {
-		res.status(err.response.status).json(err.response.data);
+		console.log(err);
+		res.status(500).json("Server error");
 	}
 });
 
