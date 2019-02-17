@@ -24,6 +24,21 @@ input {
 	width: 100%;
 }
 
+.form-bottom {
+	display: flex;
+	height: 40px;
+
+	div {
+		width: 50px;
+	}
+}
+
+.loading-spinner {
+	width: 35px;
+	display: block;
+	margin: auto;
+}
+
 .verify-container {
 	width: 400px;
 	margin: auto;

@@ -14,6 +14,9 @@ const removeAllChildren = el => {
 
 (() => {
 	const verifyKey = async (name, key) => {
+		const spinner = document.querySelector(".js-loading-spinner");
+		spinner.classList.remove("hidden");
+
 		try {
 			const res = await fetch(`/api/verify?name=${name}&key=${key}`);
 			if (res.ok) {
@@ -38,6 +41,8 @@ const removeAllChildren = el => {
 			errorMessage.appendChild(errorText);
 			document.querySelector(".js-error").appendChild(errorMessage);
 			document.querySelector(".alert").classList.remove("hidden");
+		} finally {
+			spinner.classList.add("hidden");
 		}
 	};
 
