@@ -6,7 +6,8 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const path = require("path");
-const axios = require("axios");
+require("es6-promise").polyfill();
+require("isomorphic-fetch");
 const port = process.env.PORT || 8080;
 const app = express();
 
@@ -33,7 +34,7 @@ app.get("/api/verify", async (req, res) => {
 
 	try {
 		const { name, key } = req.query;
-		const apiResponse = await axios.get(
+		const apiResponse = await fetch(
 			`http://nba-notify-api.herokuapp.com/verify?key=${key}&name=${name}`,
 		);
 		const data = await apiResponse.data;
