@@ -1,6 +1,16 @@
 import "@babel/polyfill";
 import "../style/verify.scss";
-import axios from "axios";
+
+const removeAllChildren = el => {
+	const removeChild = child => el.removeChild(child);
+
+	const child = el.firstChild;
+
+	if (child) {
+		removeChild(child);
+		removeAllChildren(el);
+	}
+};
 
 (() => {
 	const verifyKey = async (name, key) => {
@@ -10,15 +20,21 @@ import axios from "axios";
 				window.location.href = "/";
 			} else {
 				const data = await res.json();
+
+				const errorDiv = document.querySelector(".js-error");
+				removeAllChildren(errorDiv);
+
 				const errorMessage = document.createElement("p");
 				const errorText = document.createTextNode(data.message);
+
 				errorMessage.appendChild(errorText);
-				document.querySelector(".js-error").appendChild(errorMessage);
+				errorDiv.appendChild(errorMessage);
 				document.querySelector(".alert").classList.remove("hidden");
 			}
 		} catch (err) {
 			const errorMessage = document.createElement("p");
 			const errorText = document.createTextNode("Server error");
+
 			errorMessage.appendChild(errorText);
 			document.querySelector(".js-error").appendChild(errorMessage);
 			document.querySelector(".alert").classList.remove("hidden");
