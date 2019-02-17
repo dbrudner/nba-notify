@@ -37,7 +37,7 @@ app.get("/api/verify", async (req, res) => {
 		const apiResponse = await fetch(
 			`http://nba-notify-api.herokuapp.com/verify?key=${key}&name=${name}`,
 		);
-		const data = await apiResponse.data;
+		const data = await apiResponse.json();
 
 		if (data.valid) {
 			const token = jwt.sign({ verified: true }, process.env.APP_SECRET);
@@ -50,7 +50,6 @@ app.get("/api/verify", async (req, res) => {
 			});
 		}
 	} catch (err) {
-		console.log(err);
 		res.status(500).json("Server error");
 	}
 });
