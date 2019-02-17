@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 
 app.get("/api/verify", async (req, res) => {
 	if (req.verified) {
-		return res.status(304).json({
+		return res.status(200).json({
 			verified: true,
 			message: "You are already authorized",
 		});
