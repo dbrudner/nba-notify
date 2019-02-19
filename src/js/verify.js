@@ -3,7 +3,6 @@ import "../style/verify.scss";
 
 const removeAllChildren = el => {
 	const removeChild = child => el.removeChild(child);
-
 	const child = el.firstChild;
 
 	if (child) {
