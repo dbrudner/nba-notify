@@ -1,17 +1,6 @@
 import "@babel/polyfill";
 import "../style/verify.scss";
 
-const removeChild = (parent, child) => parent.removeChild(child);
-
-const removeAllChildren = parent => {
-	const child = parent.firstChild;
-
-	if (child) {
-		removeChild(parent, child);
-		removeAllChildren(parent);
-	}
-};
-
 class Verify {
 	constructor(
 		errorMessageEl,
