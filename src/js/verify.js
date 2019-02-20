@@ -1,55 +1,115 @@
 import "@babel/polyfill";
 import "../style/verify.scss";
 
-const removeAllChildren = el => {
-	const removeChild = child => el.removeChild(child);
+const removeChild = (parent, child) => parent.removeChild(child);
 
-	const child = el.firstChild;
+const removeAllChildren = parent => {
+	const child = parent.firstChild;
 
 	if (child) {
-		removeChild(child);
-		removeAllChildren(el);
+		removeChild(parent, child);
+		removeAllChildren(parent);
 	}
 };
 
-(() => {
-	const verifyKey = async (name, key) => {
-		const spinner = document.querySelector(".js-loading-spinner");
-		spinner.classList.remove("hidden");
+class Verify {
+	constructor(
+		errorMessageEl,
+		errorAlertEl,
+		betaKeyNameInput,
+		betaKeyKeyInput,
+		betaKeyForm,
+		loadingSpinnerEl,
+	) {
+		this.errorMessageEl = errorMessageEl;
+		this.errorAlertEl = errorAlertEl;
+		this.betaKeyNameInput = betaKeyNameInput;
+		this.betaKeyKeyInput = betaKeyKeyInput;
+		this.betaKeyForm = betaKeyForm;
+		this.loadingSpinnerEl = loadingSpinnerEl;
+	}
 
-		try {
-			const res = await fetch(`/api/verify?name=${name}&key=${key}`);
-			if (res.ok) {
-				window.location.href = "/";
-			} else {
-				const data = await res.json();
+	toggleEl(el) {
+		el.classList.toggle("hidden");
+	}
 
-				const errorDiv = document.querySelector(".js-error");
-				removeAllChildren(errorDiv);
+	removeChild(parent, child) {
+		parent.removeChild(child);
+	}
 
-				const errorMessage = document.createElement("p");
-				const errorText = document.createTextNode(data.message);
+	removeAllChildren(parent) {
+		const child = parent.firstChild;
 
-				errorMessage.appendChild(errorText);
-				errorDiv.appendChild(errorMessage);
-				document.querySelector(".alert").classList.remove("hidden");
-			}
-		} catch (err) {
-			const errorMessage = document.createElement("p");
-			const errorText = document.createTextNode("Server error");
-
-			errorMessage.appendChild(errorText);
-			document.querySelector(".js-error").appendChild(errorMessage);
-			document.querySelector(".alert").classList.remove("hidden");
-		} finally {
-			spinner.classList.add("hidden");
+		if (child) {
+			this.removeChild(parent, child);
+			this.removeAllChildren(parent);
 		}
-	};
+	}
 
-	document.querySelector("#beta-key-form").addEventListener("submit", e => {
-		e.preventDefault();
-		const name = document.querySelector("#beta-key-name").value;
-		const key = document.querySelector("#beta-key-key").value;
-		verifyKey(name, key);
-	});
-})();
+	showErrorMessage(message) {
+		const errorMessage = document.createElement("p");
+		const errorText = document.createTextNode(message);
+		errorMessage.appendChild(errorText);
+
+		this.removeAllChildren(this.errorMessageEl);
+		this.errorMessageEl.appendChild(errorMessage);
+		this.toggleEl(this.errorAlertEl);
+	}
+
+	async tryVerifyKey(name, key) {
+		const res = await fetch(`/api/verify?name=${name}&key=${key}`);
+		if (res.ok) {
+			window.location.href = "/";
+		} else {
+			const data = await res.json();
+			this.showErrorMessage(data.message);
+		}
+	}
+
+	catchVerifyKey() {
+		const errorMessage = document.createElement("p");
+		const errorText = document.createTextNode("Server error");
+
+		this.errorMessage.appendChild(errorText);
+		this.errorMessageEl.appendChild(errorMessage);
+		this.toggleEl(this.errorMessageEl);
+	}
+
+	async verifyKey(name, key) {
+		this.toggleEl(this.loadingSpinnerEl);
+		try {
+			this.tryVerifyKey(name, key);
+		} catch (err) {
+			this.catchVerifyKey();
+		} finally {
+			this.toggleEl(this.loadingSpinnerEl);
+		}
+	}
+
+	intialize() {
+		this.betaKeyForm.addEventListener("submit", e => {
+			e.preventDefault();
+			const name = this.betaKeyNameInput.value;
+			const key = this.betaKeyKeyInput.value;
+			this.verifyKey(name, key);
+		});
+	}
+}
+
+const errorMessageEl = document.querySelector(".js-error");
+const errorAlertEl = document.querySelector(".alert");
+const betaKeyNameInput = document.querySelector("#beta-key-name");
+const betaKeyKeyInput = document.querySelector("#beta-key-key");
+const betaKeyForm = document.querySelector("#beta-key-form");
+const loadingSpinnerEl = document.querySelector(".js-loading-spinner");
+
+const verify = new Verify(
+	errorMessageEl,
+	errorAlertEl,
+	betaKeyNameInput,
+	betaKeyKeyInput,
+	betaKeyForm,
+	loadingSpinnerEl,
+);
+
+verify.intialize();
