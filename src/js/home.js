@@ -186,11 +186,8 @@ class Home {
 
 			const tricode = el.getAttribute("data-tricode");
 			const messaging = firebase.messaging();
-
 			const userToken = await messaging.getToken();
-
 			const url = `https://nba-notify-api.herokuapp.com/${action}`;
-
 			const body = {
 				tricode,
 				userToken,
