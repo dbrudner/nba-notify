@@ -101,15 +101,17 @@ class Home {
 	}
 
 	alreadySubscribed(subscription) {
-		return false;
 		return subscription
 			? subscription.subscriptions.includes(team.tricode)
 			: false;
 	}
 
-	createSubscribeButton(fullName, tricode) {
+	createSubscribeButton(fullName, tricode, subscription) {
+		const alreadySubscribed = this.alreadySubscribed(subscription);
+		const subscribeButtonText = this.createSubscribeButtonText(
+			alreadySubscribed,
+		);
 		const subscribeButton = document.createElement("button");
-		const subscribeButtonText = this.createSubscribeButtonButtonText();
 
 		subscribeButton.setAttribute("data-team", fullName);
 		subscribeButton.setAttribute("data-tricode", tricode);
@@ -117,24 +119,14 @@ class Home {
 		subscribeButton.classList.add(
 			"btn",
 			"center-block",
-			"js-subscribe-team",
-			"btn-warning",
+			alreadySubscribed ? "js-unsubscribe-team" : "js-subscribe-team",
+			alreadySubscribed && "btn-warning",
 		);
-		// subscribeButton.classList.add(
-		// 	"btn",
-		// 	"center-block",
-		// 	alreadySubscribed ? "js-unsubscribe-team" : "js-subscribe-team",
-		// 	alreadySubscribed && "btn-warning",
-		// );
 
 		return subscribeButton;
 	}
 
-	createSubscribeButtonButtonText(alreadySubscribed) {
-		// const alreadySubscribed = subscription
-		// 		? subscription.subscriptions.includes(team.tricode)
-		// 		: false;
-
+	createSubscribeButtonText(alreadySubscribed) {
 		return document.createTextNode(
 			alreadySubscribed ? "Unsubscribe" : "Subscribe",
 		);
@@ -156,11 +148,15 @@ class Home {
 		return logo;
 	}
 
-	buildTeamDiv({ fullName, tricode }) {
+	buildTeamDiv({ fullName, tricode }, subscription) {
 		const teamDiv = this.createTeamDiv();
 		const teamName = this.createTeamName(fullName);
 		const logo = this.createLogo(tricode, fullName);
-		const subscribeButton = this.createSubscribeButton(fullName, tricode);
+		const subscribeButton = this.createSubscribeButton(
+			fullName,
+			tricode,
+			subscription,
+		);
 
 		teamDiv.appendChild(teamName);
 		teamDiv.appendChild(logo);
@@ -178,7 +174,7 @@ class Home {
 
 	displayTeams(teams, subscription) {
 		teams.forEach(team => {
-			const teamDiv = this.buildTeamDiv(team);
+			const teamDiv = this.buildTeamDiv(team, subscription);
 			this.teams.appendChild(teamDiv);
 		});
 	}
