@@ -3,34 +3,85 @@ import "../style/home.scss";
 import * as firebase from "firebase";
 import axios from "axios";
 
-(() => {
-	// Initialize firebase
-	firebase.initializeApp({
-		authDomain: "nba-notify.firebaseapp.com",
-		databaseURL: "https://nba-notify.firebaseio.com",
-		projectId: "nba-notify",
-		storageBucket: "nba-notify.appspot.com",
-		messagingSenderId: "852852054770",
-	});
+class Home {
+	constructor(
+		main,
+		notificationsAlert,
+		teams,
+		enableNotificationsButton,
+		loadingEl,
+	) {
+		this.main = main;
+		this.notificationsAlert = notificationsAlert;
+		this.teams = teams;
+		this.enableNotificationsButton = enableNotificationsButton;
+		this.loadingEl = loadingEl;
+	}
 
-	const messaging = firebase.messaging();
+	async initialize() {
+		this.initializeFirebase();
+		this.createEnableNotificationsButtonClickListener();
+		this.createTeamClickListener();
 
-	// Register service worker
-	if ("serviceWorker" in navigator) {
-		window.addEventListener("load", function() {
-			navigator.serviceWorker.register("/firebase-messaging-sw.js");
+		const teams = await this.fetchTeams();
+		const subscription = await this.fetchSubscription();
+
+		this.loadingEl.classList.add("hidden");
+		this.displayTeams(teams, subscription);
+	}
+
+	initializeFirebase() {
+		firebase.initializeApp({
+			authDomain: "nba-notify.firebaseapp.com",
+			databaseURL: "https://nba-notify.firebaseio.com",
+			projectId: "nba-notify",
+			storageBucket: "nba-notify.appspot.com",
+			messagingSenderId: "852852054770",
 		});
 	}
 
-	// Fetches array of NBA teams info
-	const fetchTeams = async () => {
+	createEnableNotificationsButtonClickListener() {
+		this.enableNotificationsButton.addEventListener("click", async () => {
+			try {
+				const messaging = firebase.messaging();
+				await messaging.requestPermission();
+				const token = await messaging.getToken();
+
+				return token;
+			} catch (error) {
+				console.error(error);
+			}
+		});
+	}
+
+	createTeamClickListener() {
+		document.addEventListener("click", e => {
+			const action = e.target.classList.contains("js-subscribe-team")
+				? "subscribe"
+				: "unsubscribe";
+			this.setSubscription(e.target, action);
+		});
+	}
+
+	registerServiceWorker() {
+		if ("serviceWorker" in navigator) {
+			window.addEventListener("load", function() {
+				navigator.serviceWorker.register("/firebase-messaging-sw.js");
+			});
+		} else {
+			alert("Please use a modern browser (chrome or firefox).");
+		}
+	}
+
+	async fetchTeams() {
 		const fetchURL = "https://infinite-cove-44078.herokuapp.com/teams";
 		const res = await fetch(fetchURL);
 		const data = await res.json();
 		return data.Teams;
-	};
+	}
 
-	const fetchSubscription = async () => {
+	async fetchSubscription() {
+		const messaging = firebase.messaging();
 		await messaging.requestPermission();
 		const userToken = await messaging.getToken();
 
@@ -38,120 +89,111 @@ import axios from "axios";
 		const res = await fetch(fetchURL);
 		const data = await res.json();
 		return data;
-	};
+	}
 
-	// Checks notification permission and hides either
-	// 	alert if permission is granted
-	// 	teams if permission is not granted
-	const checkNotificationPermission = () => {
-		let hiddenEl;
-
-		if (Notification.permission === "granted") {
-			hiddenEl = document.querySelector(".js-notifications-alert");
-		} else {
-			hiddenEl = document.querySelector(".main");
-		}
+	checkNotificationPermission() {
+		const hiddenEl =
+			Notification.permission === "granted"
+				? this.notificationsAlert
+				: this.main;
 
 		hiddenEl.classList.add("hidden");
-	};
+	}
 
-	// Iterates through `teams`, creates elements, and appends them
-	const displayTeams = (teams, subscription) => {
+	alreadySubscribed(subscription) {
+		return false;
+		return subscription
+			? subscription.subscriptions.includes(team.tricode)
+			: false;
+	}
+
+	createSubscribeButton(fullName, tricode) {
+		const subscribeButton = document.createElement("button");
+		const subscribeButtonText = this.createSubscribeButtonButtonText();
+
+		subscribeButton.setAttribute("data-team", fullName);
+		subscribeButton.setAttribute("data-tricode", tricode);
+		subscribeButton.appendChild(subscribeButtonText);
+		subscribeButton.classList.add(
+			"btn",
+			"center-block",
+			"js-subscribe-team",
+			"btn-warning",
+		);
+		// subscribeButton.classList.add(
+		// 	"btn",
+		// 	"center-block",
+		// 	alreadySubscribed ? "js-unsubscribe-team" : "js-subscribe-team",
+		// 	alreadySubscribed && "btn-warning",
+		// );
+
+		return subscribeButton;
+	}
+
+	createSubscribeButtonButtonText(alreadySubscribed) {
+		// const alreadySubscribed = subscription
+		// 		? subscription.subscriptions.includes(team.tricode)
+		// 		: false;
+
+		return document.createTextNode(
+			alreadySubscribed ? "Unsubscribe" : "Subscribe",
+		);
+	}
+
+	createTeamName(fullName) {
+		const teamName = document.createElement("h3");
+		const teamNameText = document.createTextNode(fullName);
+		teamName.appendChild(teamNameText);
+
+		return teamName;
+	}
+
+	createLogo(tricode, fullName) {
+		const logo = document.createElement("img");
+		logo.src = `//cdn.nba.net/assets/logos/teams/secondary/web/${tricode}.svg`;
+		logo.alt = fullName;
+
+		return logo;
+	}
+
+	buildTeamDiv({ fullName, tricode }) {
+		const teamDiv = this.createTeamDiv();
+		const teamName = this.createTeamName(fullName);
+		const logo = this.createLogo(tricode, fullName);
+		const subscribeButton = this.createSubscribeButton(fullName, tricode);
+
+		teamDiv.appendChild(teamName);
+		teamDiv.appendChild(logo);
+		teamDiv.appendChild(subscribeButton);
+
+		return teamDiv;
+	}
+
+	createTeamDiv() {
+		const teamDiv = document.createElement("div");
+		teamDiv.classList.add("team");
+
+		return teamDiv;
+	}
+
+	displayTeams(teams, subscription) {
 		teams.forEach(team => {
-			const alreadySubscribed = subscription
-				? subscription.subscriptions.includes(team.tricode)
-				: false;
-
-			// Getting target container
-			const target = document.querySelector(".teams");
-
-			// Creating elements:
-			// 	teamDiv: Main div (<div />)
-			// 	teamName: Team name (<h3 />)
-			// 	logo: Team logo (<img />)
-			// 	subscribeButton: button when clicked subscribes to team (<button />)
-			const teamDiv = document.createElement("div");
-			const teamName = document.createElement("h3");
-			const logo = document.createElement("img");
-			const subscribeButton = document.createElement("button");
-
-			// Creating text node for team name <h3 />
-			const teamNameText = document.createTextNode(team.fullName);
-
-			// Creating subscribe text
-			const subscribeText = document.createTextNode(
-				alreadySubscribed ? "Unsubscribe" : "Subscribe",
-			);
-
-			// Adding data attributes to main <div />
-			subscribeButton.setAttribute("data-team", team.fullName);
-			subscribeButton.setAttribute("data-tricode", team.tricode);
-
-			// Adding .team class to main <div />
-			teamDiv.classList.add("team");
-
-			// Adding team name to header
-			teamName.appendChild(teamNameText);
-
-			// Setting src on <img />
-			logo.src = `//cdn.nba.net/assets/logos/teams/secondary/web/${
-				team.tricode
-			}.svg`;
-
-			// Setting alt on <img />
-			logo.alt = team.fullName;
-
-			// Adding text and class to <button />
-			subscribeButton.appendChild(subscribeText);
-			subscribeButton.classList.add(
-				"btn",
-				"center-block",
-				alreadySubscribed ? "js-unsubscribe-team" : "js-subscribe-team",
-				alreadySubscribed && "btn-warning",
-			);
-
-			// Adding teamname text to teamName <div />
-			teamName.appendChild(teamNameText);
-
-			// Appending nodes
-			teamDiv.appendChild(logo);
-			teamDiv.appendChild(teamName);
-			teamDiv.appendChild(subscribeButton);
-
-			// Adding el to target container
-			target.appendChild(teamDiv);
+			const teamDiv = this.buildTeamDiv(team);
+			this.teams.appendChild(teamDiv);
 		});
-	};
+	}
 
-	// function to add event listener to enable notifications on enable notifications button
-	const enableNotificationsButton = document.querySelector(
-		".js-enable-notifications",
-	);
-
-	enableNotificationsButton.addEventListener("click", async () => {
-		try {
-			await messaging.requestPermission();
-			const token = await messaging.getToken();
-
-			return token;
-		} catch (error) {
-			console.error(error);
-		}
-	});
-
-	const subscribeToTeam = async el => {
+	async setSubscription(el, action) {
 		try {
 			el.setAttribute("disabled", true);
 			el.firstChild.nodeValue = "Loading...";
-			// el.innerHTML =
-			// 	'<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px"></i>';
 
 			const tricode = el.getAttribute("data-tricode");
 			const messaging = firebase.messaging();
 
 			const userToken = await messaging.getToken();
 
-			const url = "https://nba-notify-api.herokuapp.com/subscribe";
+			const url = `https://nba-notify-api.herokuapp.com/${action}`;
 
 			const body = {
 				tricode,
@@ -164,64 +206,23 @@ import axios from "axios";
 			el.classList.add("btn-warning");
 			el.firstChild.nodeValue = "Unsubscribe";
 		} catch (error) {}
-	};
+	}
+}
 
-	const unsubscribeToTeam = async el => {
-		try {
-			el.setAttribute("disabled", true);
-			el.firstChild.nodeValue = "Loading...";
-			// el.innerHTML =
-			// 	'<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px"></i>';
+const main = document.querySelector(".main");
+const notificationsAlert = document.querySelector(".alert");
+const teams = document.querySelector(".teams");
+const enableNotificationsButton = document.querySelector(
+	".js-enable-notifications",
+);
+const loadingEl = document.querySelector(".js-loading-spinner");
 
-			const tricode = el.getAttribute("data-tricode");
-			const messaging = firebase.messaging();
+const home = new Home(
+	main,
+	notificationsAlert,
+	teams,
+	enableNotificationsButton,
+	loadingEl,
+);
 
-			const userToken = await messaging.getToken();
-
-			const url = "https://nba-notify-api.herokuapp.com/unsubscribe";
-
-			const body = {
-				tricode,
-				userToken,
-			};
-
-			await axios.post(url, body);
-
-			await el.removeAttribute("disabled");
-			el.classList.remove("btn-warning");
-			el.firstChild.nodeValue = "Subscribe";
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	document.addEventListener("click", e => {
-		if (e.target.classList.contains("js-subscribe-team")) {
-			subscribeToTeam(e.target);
-		}
-		if (e.target.classList.contains("js-unsubscribe-team")) {
-			unsubscribeToTeam(e.target);
-		}
-	});
-
-	checkNotificationPermission();
-
-	const createLoadingDiv = () => {
-		const loadingDiv = document.createElement("div");
-		const loadingText = document.createTextNode("Loading");
-		loadingDiv.appendChild(loadingText);
-		loadingDiv.classList.add("loading");
-		return loadingDiv;
-	};
-
-	// Fetches and displays teams
-	(async () => {
-		const loadingDiv = createLoadingDiv();
-		const teamsDiv = document.querySelector(".teams");
-		teamsDiv.appendChild(loadingDiv);
-		const teams = await fetchTeams();
-		const subscription = await fetchSubscription();
-		teamsDiv.removeChild(loadingDiv);
-		displayTeams(teams, subscription);
-	})();
-})();
+home.initialize();
