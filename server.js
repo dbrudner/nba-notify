@@ -24,6 +24,16 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.get("/api/refresh-token", async (req, res) => {
+	const { newToken, oldToken } = req.body;
+	const apiResponse = await fetch(
+		`http://nba-notify-api.herokuapp.com/refresh-token?newToken=${newToken}&oldToken=${oldToken}`,
+	);
+
+	const data = await apiResponse.json();
+	res.json(data);
+});
+
 app.get("/api/verify", async (req, res) => {
 	if (req.verified) {
 		return res.json({

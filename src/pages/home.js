@@ -48,12 +48,14 @@ class Home {
 		const messaging = firebase.messaging();
 		const oldToken = await messaging.getToken();
 
+		// Send to db to replace old token with new token for subscriptions
 		messaging.onTokenRefresh(() => {
-			messaging.getToken().then(newToken => {
-				console.log("new token");
-				console.log({ newToken, oldToken });
-
-				// Send to db to replace old token with new token for subscriptions
+			messaging.getToken().then(async newToken => {
+				const response = fetch(
+					`/api/refresh-token?oldToken=${oldToken}&newToken=${newToken}`,
+				);
+				const data = response.json();
+				console.log(data);
 			});
 		});
 	}
