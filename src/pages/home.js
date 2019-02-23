@@ -1,7 +1,8 @@
 import "@babel/polyfill";
-import "../style/home.scss";
-import * as firebase from "firebase";
 import axios from "axios";
+import * as firebase from "firebase";
+import "../style/home.scss";
+import Team from "../components/team";
 
 class Home {
 	constructor(
@@ -11,15 +12,18 @@ class Home {
 		enableNotificationsButton,
 		loadingEl,
 	) {
-		this.main = main;
-		this.notificationsAlert = notificationsAlert;
-		this.teams = teams;
-		this.enableNotificationsButton = enableNotificationsButton;
-		this.loadingEl = loadingEl;
+		this.main = document.querySelector(".main");
+		this.notificationsAlert = document.querySelector(".alert");
+		this.teams = document.querySelector(".teams");
+		this.enableNotificationsButton = enableNotificationsButton = document.querySelector(
+			".js-enable-notifications",
+		);
+		this.loadingEl = document.querySelector(".js-loading-spinner");
 	}
 
 	async initialize() {
 		this.initializeFirebase();
+		this.initializeHandleTokenRefresh();
 		this.createEnableNotificationsButtonClickListener();
 		this.createTeamClickListener();
 
@@ -40,6 +44,20 @@ class Home {
 		});
 	}
 
+	async initializeHandleTokenRefresh() {
+		const messaging = firebase.messaging();
+		const oldToken = await messaging.getToken();
+
+		messaging.onTokenRefresh(() => {
+			messaging.getToken().then(newToken => {
+				console.log("new token");
+				console.log({ newToken, oldToken });
+
+				// Send to db to replace old token with new token for subscriptions
+			});
+		});
+	}
+
 	createEnableNotificationsButtonClickListener() {
 		this.enableNotificationsButton.addEventListener("click", async () => {
 			try {
@@ -56,10 +74,12 @@ class Home {
 
 	createTeamClickListener() {
 		document.addEventListener("click", e => {
-			const action = e.target.classList.contains("js-subscribe-team")
-				? "subscribe"
-				: "unsubscribe";
-			this.setSubscription(e.target, action);
+			if (e.target.classList.contains("js-subscribe-team")) {
+				this.setSubscription(e.target, "subscribe");
+			}
+			if (e.target.classList.contains("js-unsubscribe-team")) {
+				this.setSubscription(e.target, "unsubscribe");
+			}
 		});
 	}
 
@@ -100,82 +120,11 @@ class Home {
 		hiddenEl.classList.add("hidden");
 	}
 
-	alreadySubscribed(subscription) {
-		return subscription
-			? subscription.subscriptions.includes(team.tricode)
-			: false;
-	}
-
-	createSubscribeButton(fullName, tricode, subscription) {
-		const alreadySubscribed = this.alreadySubscribed(subscription);
-		const subscribeButtonText = this.createSubscribeButtonText(
-			alreadySubscribed,
-		);
-		const subscribeButton = document.createElement("button");
-
-		subscribeButton.setAttribute("data-team", fullName);
-		subscribeButton.setAttribute("data-tricode", tricode);
-		subscribeButton.appendChild(subscribeButtonText);
-		subscribeButton.classList.add(
-			"btn",
-			"center-block",
-			alreadySubscribed ? "js-unsubscribe-team" : "js-subscribe-team",
-			alreadySubscribed && "btn-warning",
-		);
-
-		return subscribeButton;
-	}
-
-	createSubscribeButtonText(alreadySubscribed) {
-		return document.createTextNode(
-			alreadySubscribed ? "Unsubscribe" : "Subscribe",
-		);
-	}
-
-	createTeamName(fullName) {
-		const teamName = document.createElement("h3");
-		const teamNameText = document.createTextNode(fullName);
-		teamName.appendChild(teamNameText);
-
-		return teamName;
-	}
-
-	createLogo(tricode, fullName) {
-		const logo = document.createElement("img");
-		logo.src = `//cdn.nba.net/assets/logos/teams/secondary/web/${tricode}.svg`;
-		logo.alt = fullName;
-
-		return logo;
-	}
-
-	buildTeamDiv({ fullName, tricode }, subscription) {
-		const teamDiv = this.createTeamDiv();
-		const teamName = this.createTeamName(fullName);
-		const logo = this.createLogo(tricode, fullName);
-		const subscribeButton = this.createSubscribeButton(
-			fullName,
-			tricode,
-			subscription,
-		);
-
-		teamDiv.appendChild(teamName);
-		teamDiv.appendChild(logo);
-		teamDiv.appendChild(subscribeButton);
-
-		return teamDiv;
-	}
-
-	createTeamDiv() {
-		const teamDiv = document.createElement("div");
-		teamDiv.classList.add("team");
-
-		return teamDiv;
-	}
-
 	displayTeams(teams, subscription) {
-		teams.forEach(team => {
-			const teamDiv = this.buildTeamDiv(team, subscription);
-			this.teams.appendChild(teamDiv);
+		teams.forEach(({ fullName, tricode }) => {
+			const newTeam = new Team(subscription, fullName, tricode);
+			const newTeamDiv = newTeam.buildTeamDiv();
+			this.teams.appendChild(newTeamDiv);
 		});
 	}
 
@@ -202,20 +151,6 @@ class Home {
 	}
 }
 
-const main = document.querySelector(".main");
-const notificationsAlert = document.querySelector(".alert");
-const teams = document.querySelector(".teams");
-const enableNotificationsButton = document.querySelector(
-	".js-enable-notifications",
-);
-const loadingEl = document.querySelector(".js-loading-spinner");
-
-const home = new Home(
-	main,
-	notificationsAlert,
-	teams,
-	enableNotificationsButton,
-	loadingEl,
-);
+const home = new Home();
 
 home.initialize();

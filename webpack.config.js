@@ -28,11 +28,11 @@ const plugins = [
 	}),
 ];
 
-const entry = glob.sync("src/js/*.js").reduce((obj, file) => {
+const entry = glob.sync("src/pages/*.js").reduce((obj, file) => {
 	const filename = file.split("/")[2];
 	return {
 		...obj,
-		[filename.substring(0, filename.length - 3)]: `./src/js/${filename}`,
+		[filename.substring(0, filename.length - 3)]: `./src/pages/${filename}`,
 	};
 }, {});
 
